@@ -12,6 +12,7 @@ let s:show_number       = get(g:, 'lightline#bufferline#show_number', 0)
 let s:unnamed           = get(g:, 'lightline#bufferline#unnamed', '*')
 let s:enable_devicons   = get(g:, 'lightline#bufferline#enable_devicons', 0)
 let s:unicode_symbols   = get(g:, 'lightline#bufferline#unicode_symbols', 0)
+let s:active_tab_hi     = get(g:, 'lightline#bufferline#active_tab_hi', 0)
 if s:unicode_symbols == 0
   let s:modified        = get(g:, 'lightline#bufferline#modified', ' +')
   let s:read_only       = get(g:, 'lightline#bufferline#read_only', ' -')
@@ -217,9 +218,54 @@ function! lightline#bufferline#init()
   augroup END
 endfunction
 
+function! s:get_active_buf_num(buffers)
+  " 何故かindexが効かないので長くなる string number の問題か
+    for l:lb in s:ls('')
+      if l:lb['active'] == 'a'
+        let l:prev = l:lb['bufnr']
+        break
+      endif
+    endfor
+    let l:counter = 0
+    for l:bn in a:buffers
+      if l:bn == l:prev
+        break
+      endif
+      let l:counter = l:counter + 1
+    endfor
+    return l:counter
+endfunction
+
+function! s:ls(all)
+  " Get :ls result
+  redir => cRes0
+    execute 'silent ls' . (a:all ? '!' : '')
+  redir END
+  let cRes = split(cRes0, "\n")
+  unlet cRes0
+
+  " Parse
+  let sRes = []
+  for i in cRes
+    " Parse a line of :ls.
+    let items = map(
+    \ matchlist(i, '\v^\s*(\d+)(.)(.)(.)(.)(.)\s+"([^"]+)".{-}(\d+).*$'),
+    \ 'v:val == " " ? "" : v:val')
+    call add(sRes, {
+    \ 'bufnr'     : items[1],
+    \ 'active'    : items[4],
+    \ })
+  endfor
+  return sRes
+endfunction
+
 function! lightline#bufferline#buffers()
   let l:buffers = s:filtered_buffers()
-  let l:current_index = index(l:buffers, bufnr('%'))
+  if s:active_tab_hi == 1
+    let l:current_index = s:get_active_buf_num(l:buffers)
+  else
+    let l:current_index = index(l:buffers, bufnr('%'))
+  endif
   if l:current_index == -1
     return [s:get_buffer_names(l:buffers, 0, len(l:buffers)), [], []]
   endif
