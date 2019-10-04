@@ -221,7 +221,7 @@ endfunction
 function! s:get_active_buf_num(buffers)
   " 何故かindexが効かないので長くなる string number の問題か
     for l:lb in s:ls('')
-      if l:lb['active'] == 'a'
+      if l:lb['show'] == '%'
         let l:prev = l:lb['bufnr']
         break
       endif
@@ -253,6 +253,7 @@ function! s:ls(all)
     \ 'v:val == " " ? "" : v:val')
     call add(sRes, {
     \ 'bufnr'     : items[1],
+    \ 'show'      : items[3],
     \ 'active'    : items[4],
     \ })
   endfor
