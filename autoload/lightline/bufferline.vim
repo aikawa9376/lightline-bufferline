@@ -221,7 +221,7 @@ endfunction
 function! s:get_active_buf_num(buffers)
   " 何故かindexが効かないので長くなる string number の問題か
     for l:lb in s:ls('')
-      if l:lb['show'] == '%'
+      if l:lb['active'] == 'a'
         let l:prev = l:lb['bufnr']
         break
       endif
@@ -234,6 +234,7 @@ function! s:get_active_buf_num(buffers)
       let l:counter = l:counter + 1
     endfor
     return l:counter
+  return l:counter
 endfunction
 
 function! s:ls(all)
@@ -252,7 +253,6 @@ function! s:ls(all)
     \ matchlist(i, '\v^\s*(\d+)(.)(.)(.)(.)(.)\s+"([^"]+)".{-}(\d+).*$'),
     \ 'v:val == " " ? "" : v:val')
     call add(sRes, {
-    \ 'bufnr'     : items[1],
     \ 'show'      : items[3],
     \ 'active'    : items[4],
     \ })
@@ -262,13 +262,13 @@ endfunction
 
 function! lightline#bufferline#buffers()
   let l:buffers = s:filtered_buffers()
-  if s:active_tab_hi == 1
-    let l:current_index = s:get_active_buf_num(l:buffers)
-  else
-    let l:current_index = index(l:buffers, bufnr('%'))
+  let l:current_index = index(l:buffers, bufnr('%'))
+
+  if l:current_index == -1
+    let l:current_index = index(l:buffers, bufnr('#'))
   endif
   if l:current_index == -1
-    return [s:get_buffer_names(l:buffers, 0, len(l:buffers)), [], []]
+    let l:current_index = s:get_active_buf_num(l:buffers)
   endif
   let l:before = s:get_buffer_names(l:buffers, 0, l:current_index)
   let l:current = s:get_buffer_names(l:buffers, l:current_index, l:current_index + 1)
