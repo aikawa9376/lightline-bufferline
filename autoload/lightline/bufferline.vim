@@ -18,9 +18,10 @@ if s:unicode_symbols == 0
   let s:read_only       = get(g:, 'lightline#bufferline#read_only', ' -')
   let s:more_buffers    = get(g:, 'lightline#bufferline#more_buffers', '...')
 else
-  let s:modified        = get(g:, 'lightline#bufferline#modified', ' ✎')
-  let s:read_only       = get(g:, 'lightline#bufferline#read_only', ' ')
-  let s:more_buffers    = get(g:, 'lightline#bufferline#more_buffers', '…')
+  let s:modified        = get(g:, 'lightline#bufferline#modified', ' ')
+  let s:read_only       = get(g:, 'lightline#bufferline#read_only', ' ')
+  let s:more_buffers    = get(g:, 'lightline#bufferline#more_buffers', '...')
+  " let s:more_buffers    = get(g:, 'lightline#bufferline#more_buffers', ' ﮷  ')
 endif
 let s:more_buffers_width = len(s:more_buffers) + 2
 
