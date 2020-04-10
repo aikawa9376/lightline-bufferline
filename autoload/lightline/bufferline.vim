@@ -222,7 +222,6 @@ endfunction
 function! s:get_active_buf_num(buffers)
   " 何故かindexが効かないので長くなる string number の問題か
     for l:lb in s:ls('')
-      echomsg string(l:lb)
       if l:lb['active'] == 'a'
         let l:prev = l:lb['bufnr']
         break
